@@ -20,7 +20,7 @@ The goals / steps of this project are the following:
 [image5]: ./output_images/HOG2.JPG
 [image6]: ./output_images/heatmaps_and_output.JPG
 [image7]: ./output_images/search_area.JPG
-[video1]: ./project_video.mp4
+[video1]: ./output_images/project_video.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -54,14 +54,17 @@ Please notice that for the training of classifier, YUV colorspace and all three 
 
 I tried various combinations of parameters and observed the detection success in the test_video. As the number of orientations used are decreased, the features for car and non-car objects start 
 to be similar, and unuseful for classification. A high resolution in orientations is desirable. In the end I decided to stick with the following:
-Orientations : 9
-pix_per_cell : 8
-cells_per_block : 2
+
+name             | value
+------------- | --
+Orientations | 9
+pix_per_cell | 8
+cells_per_block | 2
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
 I trained a linear SVM using spatial features, color features and hog features. For spatial features, I used a spatial cell size of 32x32.
-Here's an example of the (not normalized) spatial feature vector from examples of each class:
+Here are examples of (not normalized) spatial feature vectors from examples of each class:
 
 ![alt text][image3]
 
@@ -72,7 +75,7 @@ An example of the color histogram features is given below. In this example, and 
 And another example of the hog feature:
 ![alt text][image5]
 
-As a classifier, I used a linear SVM. I used class "CalibratedClassifierCV" from the scikit-learn library. This classifier not only returns the predicted labels, but also the prediction
+As a classifier, I used a linear SVM. I used class `CalibratedClassifierCV` from the scikit-learn library. This classifier not only returns the predicted labels, but also the prediction
 probabilities for the labels. I used this feature in order to eliminate some false positives.
 I normalized and scaled the feature vectors using a scaler. This prevents the classifier to be biased to specific features.
 
@@ -80,13 +83,13 @@ I normalized and scaled the feature vectors using a scaler. This prevents the cl
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-For the feature search, I limited my search area to y_start=400, y_end=256. I used the whole x-range for the search. See below image for the search area:
+For the feature search, I limited my search area to y_start=400, y_end=656. I used the whole x-range for the search. See below image for the search area:
 
 ![alt text][image7]
 
 I used four different window sizes for feature search: (64,64), (96,96), (128,128) and (256,256).
 
-For the window sliding, I made use of find_cars function supplied in lecture. ı only made some modifications regarding the color spaces. This method was useful as it creates 
+For the window sliding, I made use of find_cars function supplied in lecture. I only made some modifications regarding the color spaces. This method was useful as it creates 
 the hog image for whole search ares, and scales it according to provided window scales. The window sizes I chose correspond to scales 1, 1.5, 2 and 4 respectively. 
 
 My initial approach was to use smallest window size (64,64) in the topmost part of the search area, i.e between y=[400,528]. However, this resulted in some false negatives
@@ -105,13 +108,13 @@ I used heatmaps and predicition probability values from the classifier to overco
 
 ### Video Implementation
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
-Here's a [link to my video result](./project_video.mp4)
+####1. Provide a link to your final video output.  
+Here's a [link to my video result](./output_images/project_video.mp4)
 
 
 ####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
-I recorded the positions of positive detections in each third frame of the video. The reason I added this downsampling is for limited performance of the 
+I recorded the positions of positive detections in **each third frame** of the video. The reason I added this downsampling is for limited performance of the 
 pipeline and creating new video from images. When all of the frames are used, the processing takes 4.5 hours, even on AWS instance.
 This downsampling is not very illogical, as the video is 25fps, which means implemented pipeline update period is around 0.125seconds.
 
